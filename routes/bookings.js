@@ -30,4 +30,6 @@ router.get(
 
 router.put("/entirely", bookingControllers.cancelEBooking);
 
+router.post("/search", bookingControllers.searchBooking);
+
 module.exports = router;

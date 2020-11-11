@@ -3,7 +3,7 @@ const roomControllers = {};
 
 roomControllers.getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find().populate("booking");
+    const rooms = await Room.find().populate("booking").populate("rating");
     res.status(200).json({
       status: "success",
       data: rooms,

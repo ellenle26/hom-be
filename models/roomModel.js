@@ -10,8 +10,6 @@ const roomSchema = Schema(
     roomImages: { type: Array, required: true },
     price: { type: Number, required: true },
     status: { type: String, default: "ready" },
-    ratingCount: { type: Number, default: 0 },
-    reviewCount: { type: Number, default: 0 },
   },
   { toJSON: { virtuals: true } },
   { timestamps: true }
@@ -19,6 +17,13 @@ const roomSchema = Schema(
 
 roomSchema.virtual("booking", {
   ref: "Booking",
+  localField: "_id",
+  foreignField: "room",
+  justOne: false,
+});
+
+roomSchema.virtual("rating", {
+  ref: "Rating",
   localField: "_id",
   foreignField: "room",
   justOne: false,

@@ -1,4 +1,5 @@
 const Booking = require("../models/bookingModel");
+const User = require("../models/userModel");
 const emailHelper = require("../helpers/email");
 const bookingControllers = {};
 
@@ -11,16 +12,33 @@ bookingControllers.addBooking = async (req, res) => {
   try {
     const { id, price, checkIn, checkOut, userId } = req.body;
     const user = await User.findById(userId);
-    const booking = await Booking.create({
-      room: id,
-      checkIn: checkIn,
-      checkOut: checkOut,
-      totalStay: (checkOut - checkIn) / (1000 * 3600 * 24),
-      revenue: ((checkOut - checkIn) / (1000 * 3600 * 24)) * price,
-      bookingPrice: price,
-      user: userId,
-      bookedBy: user.authLevel,
-    });
+    let booking;
+    const d = new Date();
+    let checkInDate = new Date(checkIn);
+    if (checkInDate.getDate() == d.getDate() && user.authLevel === "staff") {
+      booking = await Booking.create({
+        room: id,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        totalStay: (checkOut - checkIn) / (1000 * 3600 * 24),
+        revenue: ((checkOut - checkIn) / (1000 * 3600 * 24)) * price,
+        bookingPrice: price,
+        user: userId,
+        bookedBy: user.authLevel,
+        status: "paid at counter",
+      });
+    } else {
+      booking = await Booking.create({
+        room: id,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        totalStay: (checkOut - checkIn) / (1000 * 3600 * 24),
+        revenue: ((checkOut - checkIn) / (1000 * 3600 * 24)) * price,
+        bookingPrice: price,
+        user: userId,
+        bookedBy: user.authLevel,
+      });
+    }
     res.status(200).json({
       status: "success",
       data: booking,
@@ -238,6 +256,68 @@ bookingControllers.cancelEBooking = async (req, res) => {
       data: bookings,
       message: "Succesffully update booking status",
     });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+bookingControllers.searchBooking = async (req, res) => {
+  try {
+    const { bookingNo, date } = req.body;
+    let bookings = [];
+    if (date === null) {
+      let bookingNo2 = parseInt(bookingNo);
+      let newBookingNo = bookingNo2.toString();
+      console.log(newBookingNo);
+      if (newBookingNo.length == 9 && newBookingNo.startsWith("9" || "1")) {
+        bookings = await Booking.find({
+          bookingContact: bookingNo2,
+        })
+          .populate("room")
+          .populate("user");
+        res.status(200).json({
+          status: "success",
+          data: bookings,
+          message: "Successfully get your bookings",
+        });
+      } else {
+        bookings = await Booking.find({ bookingNo: bookingNo })
+          .populate("room")
+          .populate("user");
+      }
+      res.status(200).json({
+        status: "success",
+        data: bookings,
+        message: "Successfully get your bookings",
+      });
+    } else if (bookingNo === null) {
+      const bookingFilter = await Booking.aggregate([
+        {
+          $addFields: {
+            stringDate: {
+              $dateToString: { format: "%Y-%m-%d", date: "$checkIn" },
+            },
+          },
+        },
+        { $match: { stringDate: date } },
+        { $project: { stringDate: 0 } },
+      ]);
+      let idList = [];
+      for (let i = 0; i < bookingFilter.length; i++) {
+        idList.push(bookingFilter[i]._id);
+      }
+      bookings = await Booking.find({ _id: { $in: idList } })
+        .populate("room")
+        .populate("user");
+      res.status(200).json({
+        status: "success",
+        data: bookings,
+        message: "Successfully get your bookings",
+      });
+    }
   } catch (err) {
     res.status(400).json({
       status: "fail",
