@@ -14,8 +14,16 @@ const userSchema = Schema(
     emailVerificationCode: { type: String, select: false, required: false },
     emailVerified: { type: Boolean, require: false, default: false },
   },
+  { toJSON: { virtuals: true } },
   { timestamps: true }
 );
+
+userSchema.virtual("rating", {
+  ref: "Rating",
+  localField: "_id",
+  foreignField: "user",
+  justOne: false,
+});
 
 userSchema.methods.generateToken = async function () {
   const accessToken = await jwt.sign(

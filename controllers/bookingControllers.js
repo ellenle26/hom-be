@@ -164,7 +164,9 @@ bookingControllers.changeStatus = async (req, res) => {
       { $match: { stringDate: date } },
       { $project: { stringDate: 0 } },
     ]);
-
+    if (bookingFilter.length == 0) {
+      throw new Error("There's no booking today");
+    }
     const bookingId = bookingFilter.find((item) => item.room == selectedRoomId);
     const booking = await Booking.findByIdAndUpdate(
       { _id: bookingId._id },

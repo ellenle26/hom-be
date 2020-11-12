@@ -34,7 +34,7 @@ userControllers.createUser = async (req, res) => {
 userControllers.getCurrentUser = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("rating");
     if (!user) {
       res.status(400).json({
         status: "fail",

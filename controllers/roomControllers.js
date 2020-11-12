@@ -58,6 +58,7 @@ roomControllers.addRoom = async (req, res) => {
 roomControllers.changeStat = async (req, res) => {
   try {
     const { stat, roomId } = req.body;
+
     await Room.findByIdAndUpdate(
       { _id: roomId },
       { status: stat },

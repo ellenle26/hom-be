@@ -3,7 +3,7 @@ const ratingControllers = {};
 
 ratingControllers.getRatings = async (req, res) => {
   try {
-    const ratings = await Rating.find();
+    const ratings = await Rating.find().populate("room").populate("user");
     res.status(200).json({
       status: "success",
       data: ratings,
