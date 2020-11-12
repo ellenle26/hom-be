@@ -6,7 +6,12 @@ const bookingControllers = require("../controllers/bookingControllers");
 //onwer get all booking
 router.get("/", bookingControllers.getBookings);
 //owner update payment status
-router.post("/", bookingControllers.updateStatus);
+router.post(
+  "/",
+  authentication.loginRequired,
+  authentication.checkAuth,
+  bookingControllers.updateStatus
+);
 //cancel booking
 router.put(
   "/pending",
@@ -28,7 +33,12 @@ router.get(
   bookingControllers.getPendingBooking
 );
 
-router.put("/entirely", bookingControllers.cancelEBooking);
+router.put(
+  "/entirely",
+  authentication.loginRequired,
+  authentication.checkAuth,
+  bookingControllers.cancelEBooking
+);
 
 router.post("/search", bookingControllers.searchBooking);
 
