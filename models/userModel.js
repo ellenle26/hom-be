@@ -8,7 +8,7 @@ const userSchema = Schema(
     email: { type: String, required: true, unique: true },
     avatarUrl: { type: String, required: false, default: "" },
     password: { type: String, required: true, select: false },
-    authLevel: { type: String, required: true, default: "user" },
+    authLevel: { type: String, required: true, default: "owner" },
     phone: { type: Number, required: true, default: 0 },
     // ============================================================
     emailVerificationCode: { type: String, select: false, required: false },
