@@ -73,4 +73,31 @@ eventControllers.getEventByDate = async (req, res) => {
   }
 };
 
+eventControllers.editEvent = async (req, res) => {
+  try {
+    const { id, name, eventContent, startDate, endDate, posterUrl } = req.body;
+    console.log(id);
+    let event = await Event.findByIdAndUpdate(
+      { _id: id.id },
+      {
+        name,
+        eventContent,
+        startDate,
+        endDate,
+        posterUrl,
+      }
+    );
+    res.status(200).json({
+      status: "success",
+      data: event,
+      message: "Successfully edit event",
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
 module.exports = eventControllers;
