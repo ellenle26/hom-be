@@ -10,6 +10,7 @@ const roomSchema = Schema(
     roomImages: { type: Array, required: true },
     price: { type: Number, required: true },
     status: { type: String, default: "ready" },
+    isDeleted: { type: Boolean, default: false },
   },
   { toJSON: { virtuals: true } },
   { timestamps: true }

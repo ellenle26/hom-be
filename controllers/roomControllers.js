@@ -78,4 +78,49 @@ roomControllers.changeStat = async (req, res) => {
   }
 };
 
+roomControllers.deleteRoom = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const room = await Room.findByIdAndUpdate({ _id: id }, { isDeleted: true });
+    res.status(200).json({
+      status: "success",
+      data: room,
+      message: "Successfully deleted room",
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+roomControllers.editRoom = async (req, res) => {
+  try {
+    const {
+      id,
+      name,
+      description,
+      facilities,
+      capacity,
+      roomImages,
+      price,
+    } = req.body;
+    const room = await Room.findByIdAndUpdate(
+      { _id: id.id },
+      { name, description, facilities, capacity, roomImages, price }
+    );
+    res.status(200).json({
+      status: "success",
+      data: room,
+      message: "Successfully edited room",
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
 module.exports = roomControllers;
