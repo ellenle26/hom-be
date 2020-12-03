@@ -6,7 +6,6 @@ const User = require("../models/userModel");
 authentication.loginRequired = (req, res, next) => {
   try {
     const tokenString = req.headers.authorization;
-
     if (!tokenString) {
       throw new Error("Login required");
     }
